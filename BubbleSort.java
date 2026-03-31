@@ -3,68 +3,107 @@ import java.util.Scanner;
 public class BubbleSort {
 
     public static void main(String[] args) {
-
         Scanner sc = new Scanner(System.in);
 
-        // 1. Solicitar quantidade de elementos
-        System.out.print("Digite a quantidade de valores: ");
-        int n = sc.nextInt();
+        Programa programa = new Programa(sc);
+        programa.executar();
 
-        // 2. Criar vetor com tamanho informado
+        sc.close();
+    }
+}
+
+class Programa {
+    private Scanner scanner;
+    private OrdenacaoBubbleSort bubbleSort;
+
+    public Programa(Scanner scanner) {
+        this.scanner = scanner;
+        this.bubbleSort = new OrdenacaoBubbleSort();
+    }
+
+    public void executar() {
+        System.out.print("Digite a quantidade de valores: ");
+        int n = scanner.nextInt();
+
         int[] vetor = new int[n];
 
-        // 3. Ler os valores
         System.out.println("Digite os valores:");
         for (int i = 0; i < n; i++) {
             System.out.print("Valor " + (i + 1) + ": ");
-            vetor[i] = sc.nextInt();
+            vetor[i] = scanner.nextInt();
         }
 
         System.out.println("\nVetor original:");
-        mostrarVetor(vetor);
+        Exibicao.mostrarVetor(vetor);
 
+        Resultado resultado = bubbleSort.ordenar(vetor);
+
+        System.out.println("\nVetor ordenado:");
+        Exibicao.mostrarVetor(vetor);
+
+        System.out.println("\nResultado da Ordenação");
+        System.out.println("Tempo de execução da ordenação: " + resultado.getTempo() + " ns");
+        System.out.println("Total de comparações: " + resultado.getComparacoes());
+        System.out.println("Total de trocas: " + resultado.getTrocas());
+    }
+}
+
+class OrdenacaoBubbleSort {
+
+    public Resultado ordenar(int[] vetor) {
         int comparacoes = 0;
         int trocas = 0;
 
-        // Bubble Sort
-        for (int i = 0; i < n - 1; i++) {
+        long inicio = System.nanoTime();
 
-            // cada rodada do bubble
-            System.out.println("\nPassada " + (i + 1) + ":");
+        for (int i = 0; i < vetor.length - 1; i++) {
+            for (int j = 0; j < vetor.length - 1 - i; j++) {
+                comparacoes++;
 
-            for (int j = 0; j < n - 1 - i; j++) {
-
-                comparacoes++; 
-
-                // troca os valores
                 if (vetor[j] > vetor[j + 1]) {
                     int temp = vetor[j];
                     vetor[j] = vetor[j + 1];
                     vetor[j + 1] = temp;
-
-                    trocas++; 
+                    trocas++;
                 }
             }
-
-            // mostra vetor a cada passada
-            mostrarVetor(vetor);
         }
 
-        // Resultado final
-        System.out.println("\nVetor ordenado:");
-        mostrarVetor(vetor);
+        long fim = System.nanoTime();
+        long tempo = fim - inicio;
 
-        // resultado do algoritmo
-        System.out.println("\n--- Análise do Bubble Sort ---");
-        System.out.println("Total de comparações: " + comparacoes);
-        System.out.println("Total de trocas: " + trocas);
+        return new Resultado(comparacoes, trocas, tempo);
+    }
+}
 
-        sc.close(); 
+class Resultado {
+    private int comparacoes;
+    private int trocas;
+    private long tempo;
+
+    public Resultado(int comparacoes, int trocas, long tempo) {
+        this.comparacoes = comparacoes;
+        this.trocas = trocas;
+        this.tempo = tempo;
     }
 
-    public static void mostrarVetor(int[] v) {
-        for (int i = 0; i < v.length; i++) {
-            System.out.print(v[i] + " ");
+    public int getComparacoes() {
+        return comparacoes;
+    }
+
+    public int getTrocas() {
+        return trocas;
+    }
+
+    public long getTempo() {
+        return tempo;
+    }
+}
+
+class Exibicao {
+    public static void mostrarVetor(int[] vetor) {
+        for (int i = 0; i < vetor.length; i++) {
+            System.out.print(vetor[i] + " ");
         }
         System.out.println();
     }
